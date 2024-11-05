@@ -24,7 +24,7 @@ fi
 # patch number
 patch="$2"
 if [ -z $patch ]; then
-    patch=1
+    patch=2
 fi
 
 # tarball

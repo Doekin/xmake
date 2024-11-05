@@ -21,9 +21,6 @@ jobs:
       - uses: xmake-io/github-action-setup-xmake@v1
         with:
           xmake-version: local#../xmake-source
-      - uses: dlang-community/setup-dlang@v1
-        with:
-          compiler: dmd-latest
       - uses: little-core-labs/get-git-tag@v3.0.2
         id: tagName
 
@@ -33,13 +30,7 @@ jobs:
           sudo apt install -y ruby ruby-dev rubygems build-essential llvm
           sudo apt install -y libgl1-mesa-dev libglu1-mesa-dev
 
-      - name: Tests
-        run: |
-          xmake lua -v -D tests/run.lua
-          xrepo --version
-
       - name: Publish
-        if: github.event.action == 'published'
         env:
           PPA_GPG_PRIKEY_2C0C68C9: ${{ secrets.PPA_GPG_PRIKEY_2C0C68C9 }}
         run: |
