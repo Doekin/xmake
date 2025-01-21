@@ -25,12 +25,15 @@ rule("qt.ui")
 
         -- get uic
         local qt = assert(target:data("qt"), "Qt not found!")
-        local uic = path.join(qt.bindir, is_host("windows") and "uic.exe" or "uic")
-        if not os.isexec(uic) and qt.libexecdir then
-            uic = path.join(qt.libexecdir, is_host("windows") and "uic.exe" or "uic")
-        end
-        if not os.isexec(uic) and qt.libexecdir_host then
-            uic = path.join(qt.libexecdir_host, is_host("windows") and "uic.exe" or "uic")
+        local uic
+        local uic_name = is_host("windows") and "uic.exe" or "uic"
+        for _, dir in ipairs({qt.bindir_host, qt.libexecdir_host, qt.bindir, qt.libexecdir}) do
+            if dir then
+                uic = path.join(dir, uic_name)
+                if os.isexec(uic) then
+                    break
+                end
+            end
         end
         assert(uic and os.isexec(uic), "uic not found!")
 

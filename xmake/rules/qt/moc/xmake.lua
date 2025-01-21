@@ -27,12 +27,15 @@ rule("qt.moc")
 
         -- get moc
         local qt = assert(target:data("qt"), "Qt not found!")
-        local moc = path.join(qt.bindir, is_host("windows") and "moc.exe" or "moc")
-        if not os.isexec(moc) and qt.libexecdir then
-            moc = path.join(qt.libexecdir, is_host("windows") and "moc.exe" or "moc")
-        end
-        if not os.isexec(moc) and qt.libexecdir_host then
-            moc = path.join(qt.libexecdir_host, is_host("windows") and "moc.exe" or "moc")
+        local moc
+        local moc_name = is_host("windows") and "moc.exe" or "moc"
+        for _, dir in ipairs({qt.bindir_host, qt.libexecdir_host, qt.bindir, qt.libexecdir}) do
+            if dir then
+                moc = path.join(dir, moc_name)
+                if os.isexec(moc) then
+                    break
+                end
+            end
         end
         assert(moc and os.isexec(moc), "moc not found!")
 

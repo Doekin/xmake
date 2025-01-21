@@ -42,7 +42,10 @@ function main(target, opt)
     local qt = assert(find_qt(), "Qt SDK not found!")
 
     -- get windeployqt
-    local windeployqt = path.join(qt.bindir, "windeployqt.exe")
+    local windeployqt = qt.bindir_host and path.join(qt.bindir_host, "windeployqt" .. (is_host("windows") and ".exe" or ""))
+    if (not windeployqt or not os.isexec(windeployqt)) and qt.bindir then
+        windeployqt = path.join(qt.bindir, "windeployqt" .. (is_host("windows") and ".exe" or ""))
+    end
     assert(os.isexec(windeployqt), "windeployqt.exe not found!")
 
     -- find qml directory
@@ -73,9 +76,9 @@ function main(target, opt)
     end
     -- bind qt bin path
     -- https://github.com/xmake-io/xmake/issues/4297
-    if qt.bindir then
+    if qt.bindir_host or qt.bindir then
         envs = envs or {}
-        envs.PATH = {qt.bindir}
+        envs.PATH = {qt.bindir_host, qt.bindir}
         local curpath = os.getenv("PATH")
         if curpath then
             table.join2(envs.PATH, path.splitenv(curpath))

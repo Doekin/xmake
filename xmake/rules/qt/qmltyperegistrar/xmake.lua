@@ -27,12 +27,15 @@ rule("qt.qmltyperegistrar")
         local qt = assert(target:data("qt"), "Qt not found!")
 
         -- get qmltyperegistrar
-        local qmltyperegistrar = path.join(qt.bindir, is_host("windows") and "qmltyperegistrar.exe" or "qmltyperegistrar")
-        if not os.isexec(qmltyperegistrar) and qt.libexecdir then
-            qmltyperegistrar = path.join(qt.libexecdir, is_host("windows") and "qmltyperegistrar.exe" or "qmltyperegistrar")
-        end
-        if not os.isexec(qmltyperegistrar) and qt.libexecdir_host then
-            qmltyperegistrar = path.join(qt.libexecdir_host, is_host("windows") and "qmltyperegistrar.exe" or "qmltyperegistrar")
+        local qmltyperegistrar
+        local qmltyperegistrar_name = is_host("windows") and "qmltyperegistrar.exe" or "qmltyperegistrar"
+        for _, dir in ipairs({qt.bindir_host, qt.libexecdir_host, qt.bindir, qt.libexecdir}) do
+            if dir then
+                qmltyperegistrar = path.join(dir, qmltyperegistrar_name)
+                if os.isexec(qmltyperegistrar) then
+                    break
+                end
+            end
         end
         assert(qmltyperegistrar and os.isexec(qmltyperegistrar), "qmltyperegistrar not found!")
 

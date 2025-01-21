@@ -91,7 +91,10 @@ function main(target, opt)
     local qt = assert(find_qt(), "Qt SDK not found!")
 
     -- get macdeployqt
-    local macdeployqt = path.join(qt.bindir, "macdeployqt")
+    local macdeployqt = qt.bindir_host and path.join(qt.bindir_host, "macdeployqt" .. (is_host("windows") and ".exe" or ""))
+    if (not macdeployqt or not os.isexec(macdeployqt)) and qt.bindir then
+        macdeployqt = path.join(qt.bindir, "macdeployqt" .. (is_host("windows") and ".exe" or ""))
+    end
     assert(os.isexec(macdeployqt), "macdeployqt not found!")
 
     -- generate target app

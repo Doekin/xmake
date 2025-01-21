@@ -25,12 +25,15 @@ rule("qt.qrc")
 
         -- get rcc
         local qt = assert(target:data("qt"), "Qt not found!")
-        local rcc = path.join(qt.bindir, is_host("windows") and "rcc.exe" or "rcc")
-        if not os.isexec(rcc) and qt.libexecdir then
-            rcc = path.join(qt.libexecdir, is_host("windows") and "rcc.exe" or "rcc")
-        end
-        if not os.isexec(rcc) and qt.libexecdir_host then
-            rcc = path.join(qt.libexecdir_host, is_host("windows") and "rcc.exe" or "rcc")
+        local rcc
+        local rcc_name = is_host("windows") and "rcc.exe" or "rcc"
+        for _, dir in ipairs({qt.bindir_host, qt.libexecdir_host, qt.bindir, qt.libexecdir}) do
+            if dir then
+                rcc = path.join(dir, rcc_name)
+                if os.isexec(rcc) then
+                    break
+                end
+            end
         end
         assert(os.isexec(rcc), "rcc not found!")
 

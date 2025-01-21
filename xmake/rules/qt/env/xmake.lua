@@ -33,7 +33,11 @@ rule("qt.env")
 
         local qmlimportpath = target:values("qt.env.qmlimportpath") or {}
         if target:is_plat("windows") or (target:is_plat("mingw") and is_host("windows")) then
-            target:add("runenvs", "PATH", qt.bindir)
+            for _, dir in ipairs({qt.bindir_host, qt.bindir}) do
+                if dir then
+                    target:add("runenvs", "PATH", dir)
+                end
+            end
             table.insert(qmlimportpath, qt.qmldir)
             -- add targetdir in QML2_IMPORT_PATH in case of the user have qml plugins
             table.insert(qmlimportpath, target:targetdir())

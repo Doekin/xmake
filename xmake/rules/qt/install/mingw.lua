@@ -42,7 +42,10 @@ function main(target, opt)
     local qt = assert(find_qt(), "Qt SDK not found!")
 
     -- get windeployqt
-    local windeployqt = path.join(qt.bindir, "windeployqt.exe")
+    local windeployqt = qt.bindir_host and path.join(qt.bindir_host, "windeployqt" .. (is_host("windows") and ".exe" or ""))
+    if (not windeployqt or not os.isexec(windeployqt)) and qt.bindir then
+        windeployqt = path.join(qt.bindir, "windeployqt" .. (is_host("windows") and ".exe" or ""))
+    end
     assert(os.isexec(windeployqt), "windeployqt.exe not found!")
 
     -- find qml directory
